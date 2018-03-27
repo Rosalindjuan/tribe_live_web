@@ -1,0 +1,66 @@
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  margin: 0;
+  padding: 0;
+}
+html {
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+}
+body, html {
+  margin: 0;
+  padding: 0;
+  background: #fff;
+  color: #333;
+  line-height: 1.5;
+  font-style: PingFang SC, Helvetica Neue, Helvetica, Arial, Hiragino Sans GB, Microsoft Yahei, \\5FAE\8F6F\96C5\9ED1, STHeiti, \\534E\6587\7EC6\9ED1, sans-serif;;
+  -webkit-overflow-scrolling: touch;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+a {
+  color: #333;
+  text-decoration: none;
+}
+
+ul, ol, li, dl, dd, dt {
+  list-style: none;
+}
+
+h1, h2, h3, h4, h5, h6, strong, span, i {
+  font-size: inherit;
+  font-weight: normal;
+  font-style: normal;
+}
+
+.clearfix {
+  *zoom: 1;
+}
+
+.clearfix:before, .clearfix:after {
+  content: "";
+  display: block;
+  overflow: hidden;
+  height: 0;
+  line-height: 0;
+  clear: both;
+  visibility: hidden;
+}
+
+img {
+  /*width: 100%;*/
+  display: block;
+  border: none;
+}
+
+input, select, textarea {
+  /*很关键：将默认的select选择框样式清除*/
+  /*outline: none;*/
+}
+:focus {
+  outline: 0
+}
