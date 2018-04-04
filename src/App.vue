@@ -10,6 +10,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="less">
   @import "assets/css/base.css";
+  @import '~vux/src/styles/reset.less';
 </style>

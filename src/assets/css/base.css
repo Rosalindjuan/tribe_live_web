@@ -64,3 +64,23 @@ input, select, textarea {
 :focus {
   outline: 0
 }
+
+
+.bg {
+  background: #f2f4f5;
+  padding-bottom: 4%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  min-height: 100%;
+}
+
+.uploading .weui-progress__bar {
+  height: 6px !important;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.uploading .weui-progress__bar .weui-progress__inner-bar {
+  background: #ffc800;
+}

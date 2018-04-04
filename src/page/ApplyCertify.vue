@@ -20,13 +20,18 @@
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="scss" scoped>
+<style lang="less" scoped>
   .apply {
     text-align: center;
     color: #777;
+    /*position: absolute;*/
+    /*width: 100%;*/
+    /*height: 100%;*/
+    background: #fff;
+
     h2 {
-      margin-top: 20%;
-      font-size: 44px;
+      padding-top: 20%;
+      font-size: 22px;
       font-weight: bold;
     }
     span {
@@ -34,7 +39,7 @@
     }
     .desc {
       margin-top: 4%;
-      font-size: 32px;
+      font-size: 16px;
       font-weight: bold;
     }
     .margin-top28 {
@@ -45,10 +50,10 @@
     }
     .protocal {
       color: #ffd350;
-      font-size: 26px;
+      font-size: 13px;
     }
     .tips {
-      font-size: 28px;
+      font-size: 14px;
       margin-top: 3%;
       font-weight: bold;
     }
@@ -58,11 +63,11 @@
       background-color: #f4a300;
       width: 74%;
       margin: 20% auto 0;
-      height: 92px;
-      line-height: 92px;
-      font-size: 36px;
+      height: 46px;
+      line-height: 46px;
+      font-size: 18px;
       text-align: center;
-      border-radius: 92px;
+      border-radius: 46px;
       font-weight: bold;
     }
   }
