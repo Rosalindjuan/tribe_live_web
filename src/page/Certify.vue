@@ -107,12 +107,12 @@ import { setTimeout, setInterval } from 'timers';
         cardList: [['身份证', '港澳居民来往内地通行证', '香港、澳门身份证', '台胞证', '护照']],
         cardValue: [],  // 证件类型
         identityValue: '', // 证件号
-        nextStep: true,  // 下一步
+        nextStep: false,  // 下一步
         stepUrl: require('../assets/images/authstep1.png'), // 步骤条切换
         uploadPicList:[
-          {percent: 0,cardImg:require('../assets/images/auth_face.png'),imgUp1:false,imgUp2: false,image_url: ''},
-          {percent: 0,cardImg:require('../assets/images/auth_back.png'),imgUp1:false,imgUp2: false,image_url: ''},
-          {percent: 0,cardImg:require('../assets/images/auth_handle.png'),imgUp1:false,imgUp2: false,image_url: ''},
+          {percent: 0,cardImg:require('../assets/images/auth_face.png'),imgUp1:false,imgUp2: false,image_url: '',timer: null},
+          {percent: 0,cardImg:require('../assets/images/auth_back.png'),imgUp1:false,imgUp2: false,image_url: '',timer: null},
+          {percent: 0,cardImg:require('../assets/images/auth_handle.png'),imgUp1:false,imgUp2: false,image_url: '',timer: null},
         ], // cardImg和cardImgList是关联一起的，数组下标一致
         cardImgList: [
           require('../assets/images/identity_face.jpg'),
@@ -129,12 +129,10 @@ import { setTimeout, setInterval } from 'timers';
       checkName() {
         var regRealName = /^(?=.*\d.*\b)/;
         if (this.realName && !regRealName.test(this.realName)) {
-          console.log('yes')
           return true
         } else {
           this.toastText = '请正确填写真实姓名'
           this.toastShow = true
-          console.log('no')
           return false
         }
 
@@ -142,12 +140,10 @@ import { setTimeout, setInterval } from 'timers';
       // 电话号码
       checkTel() {
         var regPhone = /^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/;
-        console.log('tel')
         if (this.tel && regPhone.test(this.tel)) {
           return true
         } else {
           this.toastText = '请正确输入手机号码'
-          console.log(this.toastText)
           this.toastShow = true
           return false
         }
@@ -212,65 +208,36 @@ import { setTimeout, setInterval } from 'timers';
         }
       },
       // 图片上传的进度条
-      progressBar(timer,type){
-        timer = setInterval(() => {
+      progressBar(type){
+        this.uploadPicList[type].percent = 0
+        clearInterval(this.uploadPicList[type].timer)
+        this.uploadPicList[type].timer = setInterval(() => {
           this.uploadPicList[type].percent += 1
           if (this.uploadPicList[type].percent >= 100) {
-            clearInterval(timer)
+            clearInterval(this.uploadPicList[type].timer)
           }
         },10)
-        
       },
       // 图片上传
       uploadImg(e, type) {
-        console.log(type,'type')
         if (e.target.files.length > 0) {
           // 文件上传
           let file = e.target.files[0]
           let param = new FormData()  // 创建form对象
           param.append('file', file)  // 通过append向form对象添加数据
           param.append('sign', 'dev_sign') // 添加form表单中其他数据
-          let timer1 = null,
-              timer2 = null,
-              timer3 = null
-
           this.uploadPicList[type].imgUp1 = true
           this.uploadPicList[type].imgUp2 = false
           this.uploadPicList[type].cardImg = this.cardImgList[type]
-          switch (type) {
-            case 0: {
-              this.progressBar(timer1, type)
-              break
-            }
-            case 1: {
-              this.progressBar(timer2, type)
-              break
-            }
-            case 2: {
-              this.progressBar(timer3, type)
-              break
-            }
-          }
+          this.progressBar(type)
           uploadImg(param).then(res => {
             if(!res.errcode) {
+              // console.log('da',res.datas.domain + res.datas.image)
               this.uploadPicList[type].percent = 0
               this.uploadPicList[type].imgUp1 = false
               this.uploadPicList[type].imgUp2 = true
               this.uploadPicList[type].image_url = res.datas.domain + res.datas.image
-              switch (type) {
-                case 0: {
-                  clearInterval(timer1)
-                  break
-                }
-                case 1: {
-                  clearInterval(timer2)
-                  break
-                }
-                case 2: {
-                  clearInterval(timer3)
-                  break
-                }
-              }
+              clearInterval(this.uploadPicList[type].timer)
             }
           })
         }
@@ -294,7 +261,6 @@ import { setTimeout, setInterval } from 'timers';
             id_full_image: this.uploadPicList[2].image_url
           }
           authApply(param).then(res => {
-            console.log('authApply res', res)
             if(!res.errcode) {
               this.$router.push('/certify_submit')
             }else {

@@ -31,9 +31,7 @@ import {authStatus} from '@/api'
     created(){
       this.REWRITE_USERINFO(this.$route.query)
       let param = {sign: 'dev_sign', uid: this.$route.query.uid,token: this.$route.query.token}
-      console.log(param)
       authStatus(param).then(res=> {
-        console.log('zhang',res)
         if(!res.errcode && res.datas.is_auth == 2) {
           this.reson = res.datas.remark
         }
