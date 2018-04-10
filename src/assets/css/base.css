@@ -84,3 +84,10 @@ input, select, textarea {
 .uploading .weui-progress__bar .weui-progress__inner-bar {
   background: #ffc800;
 }
+
+#certify-success .weui-cells {
+  margin-top: 0;
+}
+#certify-success .vux-cell-bd {
+    min-width: 80px;
+}
