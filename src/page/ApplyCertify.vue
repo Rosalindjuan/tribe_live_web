@@ -11,10 +11,23 @@
 </template>
 
 <script>
+  import {mapMutations, mapState} from 'vuex'
   export default {
     name: 'ApplyCertify',
     data() {
       return {}
+    },
+    computed: {
+      ...mapState(['userInfo'])
+    },
+    methods: {
+      ...mapMutations(['REWRITE_USERINFO']),
+    },
+    created(){
+      this.REWRITE_USERINFO(this.$route.query)
+      console.log(this.userInfo)
+
+      
     }
   }
 </script>

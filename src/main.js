@@ -4,6 +4,9 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import {setWechatTitle} from './utils/setWechatTitle'
+import store from './store'
+
+
 Vue.config.productionTip = false
 
 const FastClick = require('fastclick')
@@ -20,5 +23,6 @@ router.beforeEach((to, from, next) => {
 new Vue({
   el: '#app',
   router,
+  store,
   render: h => h(App)
 })

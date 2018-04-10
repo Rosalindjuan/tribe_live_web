@@ -28,37 +28,37 @@
         </group>
         <div class="resident clearfix">
           <div class="upload">
-            <img :src="cardImg1" alt="">
-            <input type="file" accept="image/*" @change="uploadImg($event, 'cardImg1')">
-            <div class="uploading" v-if="imgUp1">
+            <img :src="uploadPicList[0].cardImg" alt="">
+            <input name="file" type="file" accept="image/png,image/jpeg" @change="uploadImg($event, 0)"/>
+            <div class="uploading" v-if="uploadPicList[0].imgUp1">
               <p>正在上传</p>
-              <x-progress :percent="percent1" :show-cancel="false"></x-progress>
+              <x-progress :percent="uploadPicList[0].percent" :show-cancel="false"></x-progress>
             </div>
-            <div class="uploaded" v-if="imgUp11">
+            <div class="uploaded" v-if="uploadPicList[0].imgUp2">
               <img src="../assets/images/success.svg" alt="" class="icon">
               <p>上传成功</p>
             </div>
           </div>
           <div class="upload">
-            <img :src="cardImg2" alt="">
-            <input type="file" accept="image/*" @change="uploadImg($event, 'cardImg2')">
-            <div class="uploading" v-if="imgUp2">
+            <img :src="uploadPicList[1].cardImg" alt="">
+            <input type="file" accept="image/*" @change="uploadImg($event, 1)">
+            <div class="uploading" v-if="uploadPicList[1].imgUp1">
               <p>正在上传</p>
-              <x-progress :percent="percent2" :show-cancel="false"></x-progress>
+              <x-progress :percent="uploadPicList[1].percent" :show-cancel="false"></x-progress>
             </div>
-            <div class="uploaded" v-if="imgUp22">
+            <div class="uploaded" v-if="uploadPicList[1].imgUp2">
               <img src="../assets/images/success.svg" alt="" class="icon">
               <p>上传成功</p>
             </div>
           </div>
           <div class="upload">
-            <img :src="cardImg3" alt="">
-            <input type="file" accept="image/*" @change="uploadImg($event, 'cardImg3')">
-            <div class="uploading" v-if="imgUp3">
+            <img :src="uploadPicList[2].cardImg" alt="">
+            <input type="file" accept="image/*" @change="uploadImg($event, 2)">
+            <div class="uploading" v-if="uploadPicList[2].imgUp1">
               <p>正在上传</p>
-              <x-progress :percent="percent3" :show-cancel="false"></x-progress>
+              <x-progress :percent="uploadPicList[2].percent" :show-cancel="false"></x-progress>
             </div>
-            <div class="uploaded" v-if="imgUp33">
+            <div class="uploaded" v-if="uploadPicList[2].imgUp2">
               <img src="../assets/images/success.svg" alt="" class="icon">
               <p>上传成功</p>
             </div>
@@ -76,8 +76,10 @@
 </template>
 
 <script>
+  import {mapMutations, mapState} from 'vuex'
   import {Group, CellBox, XInput, XAddress, ChinaAddressData, PopupPicker, Toast, XProgress} from 'vux'
-
+  import {authApply,uploadImg} from '@/api'
+import { setTimeout, setInterval } from 'timers';
   export default {
     name: 'Certify',
     components: {
@@ -91,38 +93,36 @@
     },
     data() {
       return {
-        realName: '',
-        tel: '',
-        bankCode: '',
+        realName: '', // 真是姓名
+        tel: '', // 手机号码
+        bankCode: '', // 银行卡号
         toastShow: false,
         toastText: '',
         addressData: ChinaAddressData,
-        addressValue: [],
+        addressValue: [], // 银行地址
         list: [['中国银行', '北京银行', '建设银行', '中国工商银行', '中国农业银行', '中信银行', '民生银行', '中国交通银行',
           '中国邮政储蓄银行', '招商银行', '中国光大银行', '兴业银行', '其他']],
-        bank: [],
-        subBranch: '',
-
-
+        bank: [], // 银行
+        subBranch: '', // 支行
         cardList: [['身份证', '港澳居民来往内地通行证', '香港、澳门身份证', '台胞证', '护照']],
-        cardValue: [],
-        identityValue: '',
-        nextStep: true,
-        stepUrl: require('../assets/images/authstep1.png'),
-
-        percent1: 0,
-        percent2: 0,
-        percent3: 0,
-        cardImg1: require('../assets/images/auth_face.png'),
-        imgUp1: false,
-        imgUp11: false,
-        imgUp2: false,
-        imgUp22: false,
-        imgUp3: false,
-        imgUp33: false,
-        cardImg2: require('../assets/images/auth_back.png'),
-        cardImg3: require('../assets/images/auth_handle.png'),
+        cardValue: [],  // 证件类型
+        identityValue: '', // 证件号
+        nextStep: true,  // 下一步
+        stepUrl: require('../assets/images/authstep1.png'), // 步骤条切换
+        uploadPicList:[
+          {percent: 0,cardImg:require('../assets/images/auth_face.png'),imgUp1:false,imgUp2: false,image_url: ''},
+          {percent: 0,cardImg:require('../assets/images/auth_back.png'),imgUp1:false,imgUp2: false,image_url: ''},
+          {percent: 0,cardImg:require('../assets/images/auth_handle.png'),imgUp1:false,imgUp2: false,image_url: ''},
+        ], // cardImg和cardImgList是关联一起的，数组下标一致
+        cardImgList: [
+          require('../assets/images/identity_face.jpg'),
+          require('../assets/images/identity_back.jpg'),
+          require('../assets/images/identity_handle.jpg')
+        ]
       }
+    },
+    computed: {
+      ...mapState(['userInfo'])
     },
     methods: {
       // 姓名
@@ -180,14 +180,14 @@
         }
         return true
       },
+      // 下一步
       onNextStep() {
-        // if (this.checkName() && this.checkTel() && this.checkBankCode() && this.checkOther()) {
+        if (this.checkName() && this.checkTel() && this.checkBankCode() && this.checkOther()) {
         this.nextStep = true
         this.stepUrl = require('../assets/images/authstep2.png')
-        console.log('res')
-        // }
-        console.log('ads', this.toastText)
+        }
       },
+      // 证件类型 
       checkIdentity() {
         var reg_identity = /^(^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$)|(^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])((\d{4})|\d{3}[Xx])$)$/;
         if (this.cardValue.length < 1) {
@@ -211,82 +211,102 @@
           return true
         }
       },
-      setProgressBar(type) {
-        switch (type) {
-          case 'cardImg1': {
-            var timer = setInterval(() => {
-              this.percent1 += 1
-              if (this.percent1 >= 100) {
-                clearInterval(timer)
-                this.percent1 = 0;
-                this.imgUp11 = true
-                this.imgUp1 = false
-              }
-            }, 10)
-            break
+      // 图片上传的进度条
+      progressBar(timer,type){
+        timer = setInterval(() => {
+          this.uploadPicList[type].percent += 1
+          if (this.uploadPicList[type].percent >= 100) {
+            clearInterval(timer)
           }
-          case 'cardImg2': {
-            var timer = setInterval(() => {
-              this.percent2 += 1
-              if (this.percent2 >= 100) {
-                clearInterval(timer)
-                this.percent2 = 0;
-                this.imgUp22 = true
-                this.imgUp2 = false
-              }
-            }, 10)
-            break
-          }
-          case 'cardImg3': {
-            var timer = setInterval(() => {
-              this.percent3 += 1
-              if (this.percent3 >= 100) {
-                clearInterval(timer)
-                this.percent3 = 0;
-                this.imgUp33 = true
-                this.imgUp3 = false
-              }
-            }, 10)
-            break
-          }
-        }
-
+        },10)
+        
       },
+      // 图片上传
       uploadImg(e, type) {
+        console.log(type,'type')
         if (e.target.files.length > 0) {
-          console.log('upload',)
-          switch (type) {
-            case 'cardImg1': {
-              this.cardImg1 = require('../assets/images/identity_face.jpg')
-              this.imgUp1 = true
-              this.imgUp11 = false
+          // 文件上传
+          let file = e.target.files[0]
+          let param = new FormData()  // 创建form对象
+          param.append('file', file)  // 通过append向form对象添加数据
+          param.append('sign', 'dev_sign') // 添加form表单中其他数据
+          let timer1 = null,
+              timer2 = null,
+              timer3 = null
 
+          this.uploadPicList[type].imgUp1 = true
+          this.uploadPicList[type].imgUp2 = false
+          this.uploadPicList[type].cardImg = this.cardImgList[type]
+          switch (type) {
+            case 0: {
+              this.progressBar(timer1, type)
               break
             }
-            case 'cardImg2': {
-              this.cardImg2 = require('../assets/images/identity_back.jpg')
-              this.imgUp2 = true
-              this.imgUp22 = false
+            case 1: {
+              this.progressBar(timer2, type)
               break
             }
-            case 'cardImg3': {
-              this.cardImg3 = require('../assets/images/identity_handle.jpg')
-              this.imgUp3 = true
-              this.imgUp33 = false
+            case 2: {
+              this.progressBar(timer3, type)
               break
             }
           }
-          this.setProgressBar(type)
+          uploadImg(param).then(res => {
+            if(!res.errcode) {
+              this.uploadPicList[type].percent = 0
+              this.uploadPicList[type].imgUp1 = false
+              this.uploadPicList[type].imgUp2 = true
+              this.uploadPicList[type].image_url = res.datas.domain + res.datas.image
+              switch (type) {
+                case 0: {
+                  clearInterval(timer1)
+                  break
+                }
+                case 1: {
+                  clearInterval(timer2)
+                  break
+                }
+                case 2: {
+                  clearInterval(timer3)
+                  break
+                }
+              }
+            }
+          })
         }
-
       },
       onSubmit() {
-        if (this.checkIdentity() && this.imgUp11 && this.imgUp22 && this.imgUp33 ) {
-          this.$router.push('/certify_submit')
+        if (this.checkIdentity() && this.uploadPicList[0].imgUp2 && this.uploadPicList[1].imgUp2 && this.uploadPicList[2].imgUp2 ) {
+          let param = {
+            sign: 'dev_sign',
+            uid: this.userInfo.uid,
+            token: this.userInfo.token,
+            true_name: this.realName,
+            mobile: this.tel,
+            credit_card: this.bankCode,
+            bank_deposit: this.bank[0],
+            account_opening: this.addressValue[0] + this.addressValue[1],
+            bank_branch: this.subBranch,
+            is_type: this.cardList[0].indexOf(this.cardValue[0]),
+            id_number: this.identityValue,
+            id_image: this.uploadPicList[0].image_url,
+            id_rev_image: this.uploadPicList[1].image_url,
+            id_full_image: this.uploadPicList[2].image_url
+          }
+          authApply(param).then(res => {
+            console.log('authApply res', res)
+            if(!res.errcode) {
+              this.$router.push('/certify_submit')
+            }else {
+              this.toastText = res.message
+              this.toastShow = true
+            }
+          })
         }
       }
     },
     created() {
+      // console.log(this.userInfo)
     }
   }
 </script>

@@ -10,7 +10,13 @@ module.exports = {
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-    proxyTable: {},
+    proxyTable: {
+      "/index.php": {
+        target: "http://test.qunhuanbuluo.com/",
+        changeOrigin: true,
+        // pathRewrite: {"^/index.php" : "/index.php"} //后面可以使重写的新路径，一般不做更改
+      }
+    },
 
     // Various Dev Server settings
     // host: 'localhost', // can be overwritten by process.env.HOST

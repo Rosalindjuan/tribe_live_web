@@ -13,15 +13,31 @@
 </template>
 
 <script>
+import {mapMutations, mapState} from 'vuex'
+import {authStatus} from '@/api'
   export default {
     name: 'certifyFail',
     data() {
       return {
-        reson: '这是失败的原因'
+        reson: ''
       }
     },
+    computed: {
+      ...mapState(['userInfo'])
+    },
+    methods: {
+      ...mapMutations(['REWRITE_USERINFO']),
+    },
     created(){
-
+      this.REWRITE_USERINFO(this.$route.query)
+      let param = {sign: 'dev_sign', uid: this.$route.query.uid,token: this.$route.query.token}
+      console.log(param)
+      authStatus(param).then(res=> {
+        console.log('zhang',res)
+        if(!res.errcode && res.datas.is_auth == 2) {
+          this.reson = res.datas.remark
+        }
+      })      
     }
   }
 </script>
