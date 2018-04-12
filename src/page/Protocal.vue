@@ -1,6 +1,6 @@
 <template>
   <div>
-    <img src="../assets/images/id_handle.png" alt="">
+    <img src="../assets/images/protocal/protocal.jpg" alt="">
   </div>
 </template>
 
