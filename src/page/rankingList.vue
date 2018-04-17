@@ -1,6 +1,6 @@
 <template>
   <div class="bg">
-    <tab v-model="index01"
+    <tab v-model="index01" class=""
          default-color="#333"
          active-color="#ffc800"
          custom-bar-width="11px"
@@ -10,39 +10,39 @@
     </tab>
     <div class="info">
       <div class="avatar">
-        <img :src="currentList[0]['userinfo']['avatar_thumb']" :onerror="defaultImg">
+        <img :src="currentList[0]['avatar']" :onerror="defaultImg">
       </div>
       <img src="../assets/images/no_one.png" class="top-level"/>
       <div class="name">
-        {{currentList[0]['userinfo']['user_nicename']}}
-        <img :src="currentList[0]['userinfo']['sex'] == 1 ? require('../assets/images/man.png') : require('../assets/images/woman.png')" alt="" class="sex">
-        <img :src="require('../assets/images/level/' + currentList[0]['userinfo']['level'] + '.png') " alt="" class="level">
+        {{currentList[0]['nickname']}}
+        <img :src="currentList[0]['sex'] == 1 ? require('../assets/images/man.png') : require('../assets/images/woman.png')" alt="" class="sex">
+        <img :src="currentList[0]['level_icon']" alt="" class="level">
       </div>
       <div class="contribute">
-        贡献<span class="contribute-nums">{{currentList[0]['total']}}</span>收入
+        贡献<span class="contribute-nums">{{currentList[0]['glamour']}}</span>收入
       </div>
     </div>
     <ul class="user-list">
       <li class="user-item" v-for="(item, index) in currentList" :key="index" v-if="index != 0">
         <div class="nums">NO.{{index + 1}}</div>
         <div class="avatar">
-          <img :src="avatar_url" :onerror="defaultImg">
+          <img :src="item.avatar" :onerror="defaultImg">
         </div>
         <div class="name">
-          <span>{{item.userinfo.user_nicename}}</span>
-          <img :src="item.userinfo.sex == 1 ? require('../assets/images/man.png') : require('../assets/images/woman.png')" alt="" class="sex">
-          <img :src="require('../assets/images/level/' + item.userinfo.level + '.png') " alt="" class="level">
+          <span>{{item.nickname}}</span>
+          <img :src="item.sex == 1 ? require('../assets/images/man.png') : require('../assets/images/woman.png')" alt="" class="sex">
+          <img :src="item['level_icon']" alt="" class="level">
         </div>
-        <div class="contribute"><span class="contribute-nums">{{item.total}}</span></div>
+        <div class="contribute"><span class="contribute-nums">{{item.glamour}}</span></div>
       </li>
-
     </ul>
   </div>
 </template>
 
 <script>
+  import {mapMutations, mapState} from 'vuex'
   import {Tab, TabItem} from 'vux'
-
+  import {getRankingList} from '@/api'
   export default {
     components: {
       Tab,
@@ -56,113 +56,59 @@
         avatar_url: '',
         userListWeek:[],
         userListTotal:[],
-        total: false,
-        Week: false,
         defaultImg: 'this.src="' + require('../assets/images/headicon.png') + '"',
       }
     },
+    computed: {
+      ...mapState(['userInfo'])
+    },
     methods: {
+      ...mapMutations(['REWRITE_USERINFO']),
       switchTabItem(index) {
-        // console.log('on-before-index-change', index)
         switch (index){
           case 0:{
-            if(!this.total) {
-              this.getDataTotal()
-            }
             this.currentList = this.userListWeek
             break
           }
           case 1: {
-            if(!this.total) {
-              this.getDataTotal()
-            }
             this.currentList = this.userListTotal
             break
           }
         }
         this.index01 = index
       },
-      getDataTotal() {
-        // console.log('getDataTotal')
-        let data = [
-          {
-            userinfo: {
-              sex: 1,
-              avatar_thumb: '',
-              user_nicename: 'rosalind',
-              level: 19
-            },
-            total: 12345
-          },
-          {
-            userinfo: {
-              sex: 1,
-              avatar_thumb: '',
-              user_nicename: 'rosalind2',
-              level: 23
-            },
-            total: 1233
-          },
-          {
-            userinfo: {
-              sex: 0,
-              avatar_thumb: '',
-              user_nicename: 'rosalind3',
-              level: 45
-            },
-            total: 12
-          },
-        ]
-        this.userListTotal = data
-        this.total = true
-      },
-      getDataWeek() {
-        let data = [
-          {
-            userinfo: {
-              sex: 0,
-              avatar_thumb: '',
-              user_nicename: '萌萌',
-              level: 12
-            },
-            total: 78945
-          },
-          {
-            userinfo: {
-              sex: 1,
-              avatar_thumb: '',
-              user_nicename: '萌萌2',
-              level: 12
-            },
-            total: 12345
-          },
-          {
-            userinfo: {
-              sex: 0,
-              avatar_thumb: '',
-              user_nicename: '萌萌3',
-              level: 89
-            },
-            total: 12
-          },
-        ]
-        this.week = true
-        this.userListWeek = data
+      getData() {
+        console.log({sign:'dev_sign',uid: this.userInfo.uid,token: this.userInfo.token})
+        getRankingList({sign:'dev_sign',uid: this.userInfo.uid,token: this.userInfo.token}).then(res => {
+          if(!res.errcode){
+            this.userListWeek = res.datas.week_ranking
+            this.userListTotal = res.datas.ranking
+            this.currentList = this.userListWeek
+          }
+        })
       }
     },
     created() {
-      this.getDataWeek()
-      this.currentList = this.userListWeek
+      this.REWRITE_USERINFO(this.$route.query)
+      console.log(this.userInfo)
+      this.getData()
     }
   }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
   .bg {
     background: #f8f8f8;
   }
-
+  /*固定*/
+  .fixed {
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    background: #fff;
+    z-index: 999;
+  }
   .vux-tab-bar-inner {
     border-radius: 3px;
   }

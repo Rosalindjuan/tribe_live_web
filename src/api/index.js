@@ -14,4 +14,9 @@ export const authStatus = (params) => {
 export const uploadImg = (params) => {
     return http.fetchUpload(baseUrl + '/api/upload/image', params)
 }
+ 
+// 排行榜
+export const getRankingList = (params) => {
+    return http.fetchPost(baseUrl + '/api/live/get_ranking_list', params)
+}
   

@@ -79,7 +79,7 @@
   import {mapMutations, mapState} from 'vuex'
   import {Group, CellBox, XInput, XAddress, ChinaAddressData, PopupPicker, Toast, XProgress} from 'vux'
   import {authApply,uploadImg} from '@/api'
-import { setTimeout, setInterval } from 'timers';
+
   export default {
     name: 'Certify',
     components: {
@@ -183,7 +183,7 @@ import { setTimeout, setInterval } from 'timers';
         this.stepUrl = require('../assets/images/authstep2.png')
         }
       },
-      // 证件类型 
+      // 证件类型
       checkIdentity() {
         var reg_identity = /^(^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$)|(^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])((\d{4})|\d{3}[Xx])$)$/;
         if (this.cardValue.length < 1) {
