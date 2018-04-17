@@ -43,6 +43,9 @@
   import {mapMutations, mapState} from 'vuex'
   import {Tab, TabItem} from 'vux'
   import {getRankingList} from '@/api'
+  import {getSign} from '@/utils/getSign'
+
+
   export default {
     components: {
       Tab,
@@ -78,8 +81,12 @@
         this.index01 = index
       },
       getData() {
-        console.log({sign:'dev_sign',uid: this.userInfo.uid,token: this.userInfo.token})
-        getRankingList({sign:'dev_sign',uid: this.userInfo.uid,token: this.userInfo.token}).then(res => {
+        let param = {
+          uid: this.userInfo.uid,
+          token: this.userInfo.token
+        }
+        let sign = getSign(param)
+        getRankingList({sign: sign,...param}).then(res => {
           if(!res.errcode){
             this.userListWeek = res.datas.week_ranking
             this.userListTotal = res.datas.ranking
@@ -90,7 +97,6 @@
     },
     created() {
       this.REWRITE_USERINFO(this.$route.query)
-      console.log(this.userInfo)
       this.getData()
     }
   }

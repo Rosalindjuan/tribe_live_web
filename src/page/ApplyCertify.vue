@@ -25,9 +25,6 @@
     },
     created(){
       this.REWRITE_USERINFO(this.$route.query)
-      console.log(this.userInfo)
-
-      
     }
   }
 </script>

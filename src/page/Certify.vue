@@ -78,7 +78,8 @@
 <script>
   import {mapMutations, mapState} from 'vuex'
   import {Group, CellBox, XInput, XAddress, ChinaAddressData, PopupPicker, Toast, XProgress} from 'vux'
-  import {authApply,uploadImg} from '@/api'
+  import {authApply, uploadImg} from '@/api'
+  import {getSign} from '@/utils/getSign'
 
   export default {
     name: 'Certify',
@@ -109,10 +110,31 @@
         identityValue: '', // 证件号
         nextStep: false,  // 下一步
         stepUrl: require('../assets/images/authstep1.png'), // 步骤条切换
-        uploadPicList:[
-          {percent: 0,cardImg:require('../assets/images/auth_face.png'),imgUp1:false,imgUp2: false,image_url: '',timer: null},
-          {percent: 0,cardImg:require('../assets/images/auth_back.png'),imgUp1:false,imgUp2: false,image_url: '',timer: null},
-          {percent: 0,cardImg:require('../assets/images/auth_handle.png'),imgUp1:false,imgUp2: false,image_url: '',timer: null},
+        uploadPicList: [
+          {
+            percent: 0,
+            cardImg: require('../assets/images/auth_face.png'),
+            imgUp1: false,
+            imgUp2: false,
+            image_url: '',
+            timer: null
+          },
+          {
+            percent: 0,
+            cardImg: require('../assets/images/auth_back.png'),
+            imgUp1: false,
+            imgUp2: false,
+            image_url: '',
+            timer: null
+          },
+          {
+            percent: 0,
+            cardImg: require('../assets/images/auth_handle.png'),
+            imgUp1: false,
+            imgUp2: false,
+            image_url: '',
+            timer: null
+          },
         ], // cardImg和cardImgList是关联一起的，数组下标一致
         cardImgList: [
           require('../assets/images/identity_face.jpg'),
@@ -179,8 +201,8 @@
       // 下一步
       onNextStep() {
         if (this.checkName() && this.checkTel() && this.checkBankCode() && this.checkOther()) {
-        this.nextStep = true
-        this.stepUrl = require('../assets/images/authstep2.png')
+          this.nextStep = true
+          this.stepUrl = require('../assets/images/authstep2.png')
         }
       },
       // 证件类型
@@ -208,7 +230,7 @@
         }
       },
       // 图片上传的进度条
-      progressBar(type){
+      progressBar(type) {
         this.uploadPicList[type].percent = 0
         clearInterval(this.uploadPicList[type].timer)
         this.uploadPicList[type].timer = setInterval(() => {
@@ -216,7 +238,7 @@
           if (this.uploadPicList[type].percent >= 100) {
             clearInterval(this.uploadPicList[type].timer)
           }
-        },10)
+        }, 10)
       },
       // 图片上传
       uploadImg(e, type) {
@@ -225,13 +247,14 @@
           let file = e.target.files[0]
           let param = new FormData()  // 创建form对象
           param.append('file', file)  // 通过append向form对象添加数据
-          param.append('sign', 'dev_sign') // 添加form表单中其他数据
+          let sign = getSign({})
+          param.append('sign', sign) // 添加form表单中其他数据
           this.uploadPicList[type].imgUp1 = true
           this.uploadPicList[type].imgUp2 = false
           this.uploadPicList[type].cardImg = this.cardImgList[type]
           this.progressBar(type)
           uploadImg(param).then(res => {
-            if(!res.errcode) {
+            if (!res.errcode) {
               // console.log('da',res.datas.domain + res.datas.image)
               this.uploadPicList[type].percent = 0
               this.uploadPicList[type].imgUp1 = false
@@ -243,27 +266,28 @@
         }
       },
       onSubmit() {
-        if (this.checkIdentity() && this.uploadPicList[0].imgUp2 && this.uploadPicList[1].imgUp2 && this.uploadPicList[2].imgUp2 ) {
+        if (this.checkIdentity() && this.uploadPicList[0].imgUp2 && this.uploadPicList[1].imgUp2 && this.uploadPicList[2].imgUp2) {
           let param = {
-            sign: 'dev_sign',
-            uid: this.userInfo.uid,
-            token: this.userInfo.token,
-            true_name: this.realName,
-            mobile: this.tel,
-            credit_card: this.bankCode,
-            bank_deposit: this.bank[0],
             account_opening: this.addressValue[0] + this.addressValue[1],
             bank_branch: this.subBranch,
-            is_type: this.cardList[0].indexOf(this.cardValue[0]),
-            id_number: this.identityValue,
+            bank_deposit: this.bank[0],
+            credit_card: this.bankCode,
+            id_full_image: this.uploadPicList[2].image_url,
             id_image: this.uploadPicList[0].image_url,
+            id_number: this.identityValue,
             id_rev_image: this.uploadPicList[1].image_url,
-            id_full_image: this.uploadPicList[2].image_url
+            is_type: this.cardList[0].indexOf(this.cardValue[0]),
+            mobile: this.tel,
+            token: this.userInfo.token,
+            true_name: this.realName,
+            uid: this.userInfo.uid,
           }
-          authApply(param).then(res => {
-            if(!res.errcode) {
+
+          let sign = getSign(param)
+          authApply({sign: sign, ...param}).then(res => {
+            if (!res.errcode) {
               this.$router.push('/certify_submit')
-            }else {
+            } else {
               this.toastText = res.message
               this.toastShow = true
             }
@@ -272,7 +296,6 @@
       }
     },
     created() {
-      // console.log(this.userInfo)
     }
   }
 </script>

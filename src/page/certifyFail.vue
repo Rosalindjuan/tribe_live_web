@@ -3,7 +3,8 @@
     <img src="../assets/images/error.jpg">
     <div class="title">
       <p>您的认证没有通过，请
-        <router-link to="/apply_certify" class="alink">重新认证</router-link>
+
+      <router-link to="/apply_certify" class="alink">重新认证</router-link>
       </p>
       <br>
       <br>
@@ -13,8 +14,10 @@
 </template>
 
 <script>
-import {mapMutations, mapState} from 'vuex'
-import {authStatus} from '@/api'
+  import {mapMutations, mapState} from 'vuex'
+  import {authStatus} from '@/api'
+  import {getSign} from '@/utils/getSign'
+
   export default {
     name: 'certifyFail',
     data() {
@@ -28,14 +31,14 @@ import {authStatus} from '@/api'
     methods: {
       ...mapMutations(['REWRITE_USERINFO']),
     },
-    created(){
-      this.REWRITE_USERINFO(this.$route.query)
-      let param = {sign: 'dev_sign', uid: this.$route.query.uid,token: this.$route.query.token}
-      authStatus(param).then(res=> {
-        if(!res.errcode && res.datas.is_auth == 2) {
+    created() {
+      let param = {uid: this.userInfo.uid, token: this.userInfo.token}
+      let sign = getSign(param)
+      authStatus({sign: sign, ...param}).then(res => {
+        if (!res.errcode && res.datas.is_auth == 2) {
           this.reson = res.datas.remark
         }
-      })      
+      })
     }
   }
 </script>

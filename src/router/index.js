@@ -5,7 +5,6 @@ import ApplyCertify from '@/page/ApplyCertify'
 import Certify from '@/page/Certify'
 import CertifySubmit from '@/page/certifySubmit'
 import CertifyFail from '@/page/certifyFail'
-import CertifySuccess from '@/page/certifySuccess'
 import RankingList from '@/page/rankingList'
 Vue.use(Router)
 
@@ -47,11 +46,5 @@ export default new Router({
       component: RankingList,
       meta: {pageTitle: '排行榜'}
     },
-    {
-      path: '/certify_success',
-      name: 'CertifySuccess',
-      component: CertifySuccess,
-      meta: {pageTitle: '认证成功'}
-    }
   ]
 })
